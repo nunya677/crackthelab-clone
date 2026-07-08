@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # ExploitYard
 
 A gamified cyber range / CTF platform, visually inspired by [CrackTheLab](https://crackthelab.com/):
@@ -90,6 +90,7 @@ npm run test --workspace=apps/api
 
 Runs API integration tests (auth + flag submission) against the local Postgres instance started by
 `docker compose` — make sure it's up and migrated first.
-=======
+
 # crackthelab-clone
 >>>>>>> 38223303ea2d23f13170415c1f27d39d0aff07ed
+1
