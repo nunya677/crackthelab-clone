@@ -1,0 +1,8 @@
+# Reference copy of what infra/prisma/seed.ts seeds into the database.
+slug: binary-whispers
+title: "Binary Whispers"
+category: forensics
+difficulty: MEDIUM
+points: 75
+type: STATIC
+flag: "flag{b1n4ry_wh1sp3rs_1n_th3_l0g}"

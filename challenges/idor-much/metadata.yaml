@@ -1,0 +1,11 @@
+# Reference copy of what infra/prisma/seed.ts seeds into the database.
+# The Dockerfile in this folder builds the image referenced there
+# (crackthelab/idor-much:latest) that the orchestrator actually runs.
+slug: idor-much
+title: "IDOR Much?"
+category: web
+difficulty: HARD
+points: 175
+type: LIVE
+dockerImage: "crackthelab/idor-much:latest"
+flag: "flag{1d0r_1s_2_easy}"

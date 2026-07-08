@@ -1,0 +1,8 @@
+# Reference copy of what infra/prisma/seed.ts seeds into the database.
+slug: key-of-hearts
+title: "Key of Hearts"
+category: crypto
+difficulty: MEDIUM
+points: 100
+type: STATIC
+flag: "flag{vigenere_keys_repeat}"

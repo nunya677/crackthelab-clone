@@ -1,0 +1,26 @@
+{
+  "name": "@crackthelab/orchestrator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "dotenv -e ../../.env -- tsx watch src/index.ts",
+    "build": "tsc -b",
+    "start": "dotenv -e ../../.env -- node dist/index.js"
+  },
+  "dependencies": {
+    "@crackthelab/db": "*",
+    "@crackthelab/shared": "*",
+    "bullmq": "^5.34.6",
+    "dockerode": "^4.0.3",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@types/dockerode": "^3.3.31",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

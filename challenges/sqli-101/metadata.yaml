@@ -1,0 +1,11 @@
+# Reference copy of what infra/prisma/seed.ts seeds into the database.
+# The Dockerfile in this folder builds the image referenced there
+# (crackthelab/sqli-101:latest) that the orchestrator actually runs.
+slug: sqli-101
+title: "SQLi 101"
+category: web
+difficulty: MEDIUM
+points: 150
+type: LIVE
+dockerImage: "crackthelab/sqli-101:latest"
+flag: "flag{sql1_1nj3ct10n_ftw}"

@@ -1,0 +1,11 @@
+# Reference copy of what infra/prisma/seed.ts seeds into the database.
+# The Dockerfile in this folder builds the image referenced there
+# (crackthelab/cross-origin-chaos:latest) that the orchestrator actually runs.
+slug: cross-origin-chaos
+title: "Cross Origin Chaos"
+category: web
+difficulty: HARD
+points: 200
+type: LIVE
+dockerImage: "crackthelab/cross-origin-chaos:latest"
+flag: "flag{cor5_credent1als_leak}"

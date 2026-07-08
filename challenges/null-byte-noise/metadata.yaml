@@ -1,0 +1,8 @@
+# Reference copy of what infra/prisma/seed.ts seeds into the database.
+slug: null-byte-noise
+title: "Null Byte Noise"
+category: forensics
+difficulty: MEDIUM
+points: 100
+type: STATIC
+flag: "flag{utf16_hides_in_plain_sight}"

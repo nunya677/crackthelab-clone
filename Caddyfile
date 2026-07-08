@@ -1,0 +1,10 @@
+# Reverse proxy for the API only — the frontend is deployed separately to
+# Vercel/Cloudflare Pages as a static site, and the orchestrator is never
+# exposed publicly (only the api container talks to it, over the internal
+# Docker network).
+#
+# Replace api.yourdomain.com with your real subdomain before deploying.
+# Caddy handles Let's Encrypt HTTPS automatically — no manual cert setup.
+api.yourdomain.com {
+	reverse_proxy api:4000
+}

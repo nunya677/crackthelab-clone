@@ -1,0 +1,8 @@
+# Reference copy of what infra/prisma/seed.ts seeds into the database.
+slug: small-factors
+title: "Small Factors"
+category: crypto
+difficulty: HARD
+points: 150
+type: STATIC
+flag: "flag{104729_1299709}"

@@ -1,0 +1,164 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Plan {
+  FREE
+  PRO
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum ChallengeType {
+  STATIC
+  LIVE
+}
+
+enum InstanceStatus {
+  STARTING
+  RUNNING
+  STOPPED
+  EXPIRED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  username     String   @unique
+  passwordHash String
+  role         Role     @default(USER)
+  createdAt    DateTime @default(now())
+
+  // Billing: null unless the user has ever started a checkout. A cancelled
+  // or expired PayPal subscription downgrades `plan` back to FREE via the
+  // webhook handler but leaves this id in place as a record.
+  plan                 Plan      @default(FREE)
+  paypalSubscriptionId String?   @unique
+  planRenewsAt         DateTime?
+
+  submissions Submission[]
+  instances   Instance[]
+  solves      Solve[]
+}
+
+model Category {
+  id   String @id @default(cuid())
+  name String @unique
+  slug String @unique
+
+  challenges Challenge[]
+  lessons    Lesson[]
+}
+
+// Educational write-up on a technique (SQLi, IDOR, JWT attacks, etc.),
+// cross-linked to the challenge(s) that let a player practice it.
+// `challengeSlugs` is a loose reference (not a FK) since a lesson can point
+// at multiple challenges and challenges don't need to know about lessons.
+model Lesson {
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  title          String
+  categoryId     String
+  summary        String
+  content        String
+  challengeSlugs String[]
+  createdAt      DateTime @default(now())
+
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@index([categoryId])
+}
+
+model Challenge {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  title       String
+  description String
+  categoryId  String
+  difficulty  Difficulty
+  points      Int
+  type        ChallengeType
+  flagHash    String
+  dockerImage String?
+  isActive    Boolean       @default(true)
+  // Gated behind a PRO subscription. Free accounts can still see the card
+  // and description (marketing value) but can't start an instance or submit
+  // a flag — enforced server-side in the challenges/instances routes, not
+  // just hidden client-side.
+  isPremium   Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+
+  category    Category     @relation(fields: [categoryId], references: [id])
+  submissions Submission[]
+  instances   Instance[]
+  solves      Solve[]
+
+  @@index([categoryId])
+}
+
+// Log of every flag attempt (right or wrong). Not unique per user+challenge,
+// since users may submit wrong guesses before getting it right.
+model Submission {
+  id            String   @id @default(cuid())
+  userId        String
+  challengeId   String
+  submittedFlag String
+  correct       Boolean
+  createdAt     DateTime @default(now())
+
+  user      User      @relation(fields: [userId], references: [id])
+  challenge Challenge @relation(fields: [challengeId], references: [id])
+
+  @@index([userId])
+  @@index([challengeId])
+}
+
+// Created exactly once, on a user's first correct submission for a challenge.
+// The unique constraint is what prevents a challenge from scoring twice, and
+// this is what the leaderboard/solved-state queries read from.
+model Solve {
+  id          String   @id @default(cuid())
+  userId      String
+  challengeId String
+  points      Int
+  createdAt   DateTime @default(now())
+
+  user      User      @relation(fields: [userId], references: [id])
+  challenge Challenge @relation(fields: [challengeId], references: [id])
+
+  @@unique([userId, challengeId])
+  @@index([userId])
+}
+
+model Instance {
+  id          String         @id @default(cuid())
+  userId      String
+  challengeId String
+  containerId String?
+  status      InstanceStatus @default(STARTING)
+  hostPort    Int?
+  url         String?
+  startedAt   DateTime       @default(now())
+  expiresAt   DateTime
+
+  user      User      @relation(fields: [userId], references: [id])
+  challenge Challenge @relation(fields: [challengeId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+}

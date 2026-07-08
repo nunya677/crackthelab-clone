@@ -1,0 +1,8 @@
+# Reference copy of what infra/prisma/seed.ts seeds into the database.
+slug: know-your-protocols
+title: "Know Your Protocols"
+category: misc
+difficulty: MEDIUM
+points: 75
+type: STATIC
+flag: "flag{tls}"

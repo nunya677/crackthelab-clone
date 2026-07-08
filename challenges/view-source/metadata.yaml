@@ -1,0 +1,8 @@
+# Reference copy of what infra/prisma/seed.ts seeds into the database.
+slug: view-source
+title: "View Source"
+category: misc
+difficulty: EASY
+points: 50
+type: STATIC
+flag: "flag{always_check_the_source}"

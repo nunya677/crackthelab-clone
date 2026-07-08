@@ -1,0 +1,113 @@
+# Production stack for a single Docker host (see DEPLOY.md).
+# Usage: docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-crackthelab}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-crackthelab}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-crackthelab}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    # Not published to the host — only api/orchestrator (on the same Docker
+    # network) can reach it. Same reasoning for redis below.
+    expose:
+      - "5432"
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    expose:
+      - "6379"
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-crackthelab}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-crackthelab}
+      REDIS_URL: redis://redis:6379
+      API_PORT: 4000
+      WEB_ORIGIN: ${WEB_ORIGIN}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_ACCESS_TTL: ${JWT_ACCESS_TTL:-15m}
+      JWT_REFRESH_TTL: ${JWT_REFRESH_TTL:-7d}
+      ORCHESTRATOR_URL: http://orchestrator:4100
+      ORCHESTRATOR_INTERNAL_TOKEN: ${ORCHESTRATOR_INTERNAL_TOKEN}
+      PAYPAL_CLIENT_ID: ${PAYPAL_CLIENT_ID:-}
+      PAYPAL_CLIENT_SECRET: ${PAYPAL_CLIENT_SECRET:-}
+      PAYPAL_API_BASE: ${PAYPAL_API_BASE:-https://api-m.sandbox.paypal.com}
+      PAYPAL_WEBHOOK_ID: ${PAYPAL_WEBHOOK_ID:-}
+    expose:
+      - "4000"
+
+  orchestrator:
+    build:
+      context: .
+      dockerfile: apps/orchestrator/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-crackthelab}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-crackthelab}
+      REDIS_URL: redis://redis:6379
+      ORCHESTRATOR_PORT: 4100
+      ORCHESTRATOR_INTERNAL_TOKEN: ${ORCHESTRATOR_INTERNAL_TOKEN}
+      PUBLIC_HOST: ${PUBLIC_HOST}
+      # Linux Docker socket, not the Windows named pipe used in local dev.
+      DOCKER_SOCKET: /var/run/docker.sock
+      INSTANCE_TTL_MINUTES: ${INSTANCE_TTL_MINUTES:-45}
+      INSTANCE_MEMORY_MB: ${INSTANCE_MEMORY_MB:-256}
+      INSTANCE_CPU_QUOTA: ${INSTANCE_CPU_QUOTA:-0.5}
+      INSTANCE_PIDS_LIMIT: ${INSTANCE_PIDS_LIMIT:-64}
+      MAX_LIVE_INSTANCES_PER_USER: ${MAX_LIVE_INSTANCES_PER_USER:-1}
+      PRO_INSTANCE_MULTIPLIER: ${PRO_INSTANCE_MULTIPLIER:-3}
+    volumes:
+      # Docker-out-of-Docker: the orchestrator talks to the HOST's Docker
+      # daemon to create challenge containers as siblings, not children, of
+      # this container. This is the one piece that requires a real VM with
+      # Docker installed — it will not work on typical serverless/PaaS hosts.
+      - /var/run/docker.sock:/var/run/docker.sock
+    expose:
+      - "4100"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  postgres-data:
+  caddy-data:
+  caddy-config:

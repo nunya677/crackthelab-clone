@@ -1,0 +1,8 @@
+# Reference copy of what infra/prisma/seed.ts seeds into the database.
+slug: base-instincts
+title: "Base Instincts"
+category: crypto
+difficulty: EASY
+points: 50
+type: STATIC
+flag: "flag{lay3rs_of_3ncoding}"

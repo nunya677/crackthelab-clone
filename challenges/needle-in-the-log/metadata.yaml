@@ -1,0 +1,8 @@
+# Reference copy of what infra/prisma/seed.ts seeds into the database.
+slug: needle-in-the-log
+title: "Needle in the Access Log"
+category: forensics
+difficulty: MEDIUM
+points: 100
+type: STATIC
+flag: "flag{203-0-113-77}"

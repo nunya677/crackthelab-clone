@@ -1,0 +1,10 @@
+# Reference copy of what infra/prisma/seed.ts seeds into the database.
+# seed.ts is the source of truth the app actually reads; this file just
+# documents the challenge content next to any future challenge assets.
+slug: caesar-cipher
+title: "Caesar's Secret"
+category: crypto
+difficulty: EASY
+points: 50
+type: STATIC
+flag: "flag{rot13_is_not_encryption}"

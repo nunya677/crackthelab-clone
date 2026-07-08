@@ -1,0 +1,11 @@
+# Reference copy of what infra/prisma/seed.ts seeds into the database.
+# The Dockerfile in this folder builds the image referenced there
+# (crackthelab/broken-auth:latest) that the orchestrator actually runs.
+slug: broken-auth
+title: "Broken Auth"
+category: web
+difficulty: HARD
+points: 200
+type: LIVE
+dockerImage: "crackthelab/broken-auth:latest"
+flag: "flag{alg_none_is_a_lie}"

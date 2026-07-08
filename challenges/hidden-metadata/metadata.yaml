@@ -1,0 +1,8 @@
+# Reference copy of what infra/prisma/seed.ts seeds into the database.
+slug: hidden-metadata
+title: "Hidden in Plain Sight"
+category: forensics
+difficulty: EASY
+points: 75
+type: STATIC
+flag: "flag{hidden_in_plain_exif}"
