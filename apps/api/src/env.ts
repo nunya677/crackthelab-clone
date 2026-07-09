@@ -6,9 +6,19 @@ function required(name: string): string {
   return value;
 }
 
+// Comma-separated list of extra allowed CORS origins beyond webOrigin — e.g.
+// an ngrok tunnel URL for testing on a phone, or a second preview domain.
+// Set via EXTRA_CORS_ORIGINS in .env, not hardcoded, since ngrok URLs churn
+// every time the tunnel restarts.
+const extraOrigins = (process.env.EXTRA_CORS_ORIGINS ?? '')
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean);
+
 export const env = {
-  port: Number(process.env.API_PORT ?? 4000),
+  port: Number(process.env.API_PORT ?? process.env.PORT ?? 4000),
   webOrigin: process.env.WEB_ORIGIN ?? 'http://localhost:5173',
+  corsOrigins: [process.env.WEB_ORIGIN ?? 'http://localhost:5173', ...extraOrigins],
   jwtAccessSecret: required('JWT_ACCESS_SECRET'),
   jwtRefreshSecret: required('JWT_REFRESH_SECRET'),
   jwtAccessTtl: process.env.JWT_ACCESS_TTL ?? '15m',

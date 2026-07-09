@@ -425,6 +425,124 @@ async function main() {
       flagHash: hashFlag('flag{md5}'),
       isActive: true,
     },
+    {
+      slug: 'frequency-analysis',
+      title: 'Frequency Analysis',
+      description:
+        'Someone rolled their own cipher — every letter swapped for another, but not by a fixed ' +
+        'shift like Caesar. This time the mapping is arbitrary. A longer passage was intercepted ' +
+        'alongside the flag, encrypted with the same substitution:\n\n' +
+        '```\n' +
+        'zit jxoea wkgvf ygb pxdhl gctk zit sqmn rgu viost zit lxf ltzl lsgvsn wtiofr zit gsr ' +
+        'lzgft zgvtk qfr tctkn liqrgv ukgvl sgfutk qekgll zit tdhzn lzkttz ql zit tctfofu vofr ' +
+        'wtuofl zg violhtk zikgxui zit zkttl\n' +
+        '```\n\n' +
+        'Flag ciphertext:\n\n' +
+        '```\n' +
+        'ysqu{lxwlzozxzogf_yqssl_zg_yktjxtfen}\n' +
+        '```\n\n' +
+        'English letter frequencies aren\'t uniform — `e` and `t` show up constantly, `q` and `z` ' +
+        'rarely. Count letter frequencies in the passage, match them against typical English ' +
+        'frequency order, and you can recover the substitution key without ever guessing blindly.',
+      categoryId: crypto.id,
+      difficulty: 'MEDIUM' as const,
+      points: 100,
+      type: 'STATIC' as const,
+      flagHash: hashFlag('flag{substitution_falls_to_frequency}'),
+      isActive: true,
+      isPremium: true,
+    },
+    {
+      slug: 'parity-watermark',
+      title: 'Parity Watermark',
+      description:
+        'A rotated set of log-file sizes (in bytes) was pulled from a compromised backup server. ' +
+        'Nothing about the sizes looks unusual at a glance:\n\n' +
+        '```\n' +
+        '784, 335, 613, 208, 284, 231, 421, 750, 536, 397, 767, 658, 345, 213, 714, 214, 424, 273, ' +
+        '803, 428, 450, 594, 406, 885, 752, 473, 267, 586, 432, 383, 605, 837, 710, 749, 601, 579, ' +
+        '627, 498, 299, 761, 812, 589, 887, 685, 708, 610, 590, 898, 644, 844, 713, 337, 658, 373, ' +
+        '592, 498, 834, 627, 805, 409, 386, 828, 291, 328, 520, 610, 645, 503, 640, 228, 838, 659, ' +
+        '330, 423, 403, 637, 246, 633, 248, 538, 206, 401, 601, 427, 707, 682, 608, 589, 486, 465, ' +
+        '296, 899, 359, 885, 781, 631, 384, 777, 445, 316, 593, 508, 538, 238, 406, 330, 255, 543, ' +
+        '382, 250, 442, 397, 496, 213, 875, 440, 446, 655, 596, 684, 746, 831, 257, 630, 558, 857, ' +
+        '734, 889, 838, 835, 493, 669, 446, 760, 577, 697, 690, 389, 440, 375, 825, 479, 379, 835, ' +
+        '520, 239, 463, 742, 620, 455, 292, 842, 896, 876, 685, 629, 274, 881, 344, 246, 242, 377, ' +
+        '427, 475, 794, 871, 824, 866, 366, 681, 873, 360, 378, 580, 504, 773, 742, 267, 589, 557, ' +
+        '587, 773, 610, 747\n' +
+        '```\n\n' +
+        'Take each size modulo 2 — even is a `0` bit, odd is a `1` bit. Group the resulting ' +
+        'bitstream 8 bits at a time and convert each group from binary to an ASCII character.',
+      categoryId: forensics.id,
+      difficulty: 'MEDIUM' as const,
+      points: 100,
+      type: 'STATIC' as const,
+      flagHash: hashFlag('flag{p4r1ty_h1des_d4ta}'),
+      isActive: true,
+      isPremium: true,
+    },
+    {
+      slug: 'mass-assignment',
+      title: 'Mass Assignment',
+      description:
+        'A profile-update endpoint from a code review. Read carefully — the bug isn\'t a missing ' +
+        'auth check, it\'s about *which* fields get trusted:\n\n' +
+        '```js\n' +
+        'app.patch("/api/profile", requireAuth, async (req, res) => {\n' +
+        '  // FIXME: spreads the entire request body into the update — the form\n' +
+        '  // only sends { name, bio }, but nothing stops a raw API request from\n' +
+        '  // also including { role: "admin" } or { isPremium: true }, and this\n' +
+        '  // code would happily write it.\n' +
+        '  // flag{mass_4ss1gnm3nt_str1kes_4ga1n}\n' +
+        '  const updated = await User.update(req.user.id, { ...req.body });\n' +
+        '  res.json(updated);\n' +
+        '});\n' +
+        '```',
+      categoryId: web.id,
+      difficulty: 'MEDIUM' as const,
+      points: 100,
+      type: 'STATIC' as const,
+      flagHash: hashFlag('flag{mass_4ss1gnm3nt_str1kes_4ga1n}'),
+      isActive: true,
+      isPremium: true,
+    },
+    {
+      slug: 'open-redirect',
+      title: 'Open Redirect',
+      description:
+        'A "continue to your destination" link, pulled from a login flow\'s source:\n\n' +
+        '```js\n' +
+        'app.get("/login/success", (req, res) => {\n' +
+        '  // FIXME: redirects wherever `next` says, no allowlist check — an\n' +
+        '  // attacker can send a victim a link to this site\'s own trusted\n' +
+        '  // domain that silently bounces them to an attacker-controlled page,\n' +
+        '  // which is exactly the kind of link people are trained to trust.\n' +
+        '  // flag{trust_the_domain_not_the_query_string}\n' +
+        '  res.redirect(req.query.next);\n' +
+        '});\n' +
+        '```',
+      categoryId: web.id,
+      difficulty: 'EASY' as const,
+      points: 50,
+      type: 'STATIC' as const,
+      flagHash: hashFlag('flag{trust_the_domain_not_the_query_string}'),
+      isActive: true,
+    },
+    {
+      slug: 'well-known-port',
+      title: 'Well-Known Port',
+      description:
+        'One more riddle:\n\n' +
+        '_I default to port 22, replaced an insecure plaintext cousin from the 90s, and every ' +
+        '`user@host` login starts by asking you to trust my host key. What protocol am I?_\n\n' +
+        'Submit the answer in lowercase as `flag{...}`.',
+      categoryId: misc.id,
+      difficulty: 'EASY' as const,
+      points: 50,
+      type: 'STATIC' as const,
+      flagHash: hashFlag('flag{ssh}'),
+      isActive: true,
+    },
   ];
 
   for (const data of challenges) {
@@ -919,6 +1037,121 @@ async function main() {
         'This is often literally the first step in a real password-cracking engagement: identify the ' +
         'algorithm from the hash\'s shape before picking a tool or wordlist strategy.',
       challengeSlugs: ['hash-id'],
+    },
+    {
+      slug: 'frequency-analysis-lesson',
+      title: 'Frequency Analysis',
+      categoryId: crypto.id,
+      summary: 'Why any fixed letter-for-letter mapping eventually gives itself away.',
+      content:
+        'A general monoalphabetic substitution cipher — an arbitrary, non-reversed mapping from ' +
+        'one letter to another — has 26! (about 4×10²⁶) possible keys, far too many to brute ' +
+        'force. But it doesn\'t need brute forcing, because it never hides the *statistical* ' +
+        'shape of the language underneath.\n\n' +
+        'In English, letters appear with wildly different frequencies: `e` is by far the most ' +
+        'common, followed by `t`, `a`, `o`, `i`, `n`; `q`, `x`, `z` are rare. That distribution ' +
+        'survives substitution perfectly — whatever ciphertext letter `e` got mapped to will still ' +
+        'be the most frequent letter in the ciphertext. Count occurrences of each ciphertext ' +
+        'letter, line the counts up against the known English frequency order, and you get a ' +
+        'strong first guess at the key before checking a single word.\n\n' +
+        'The longer the ciphertext, the more reliable the statistics — which is exactly why real ' +
+        'frequency-analysis attacks want a paragraph to work with, not just a short flag.',
+      challengeSlugs: ['frequency-analysis'],
+    },
+    {
+      slug: 'watermarking-and-covert-channels',
+      title: 'Watermarking & Covert Channels',
+      categoryId: forensics.id,
+      summary: 'Data can be hidden in properties of a file, not just its visible content.',
+      content:
+        'A covert channel hides information in a place nobody thinks to look — not encrypted, ' +
+        'often not even deliberately obfuscated, just tucked into a property of the data that ' +
+        'looks incidental. Classic examples: the *parity* (odd/even-ness) of file sizes, the ' +
+        'exact byte-length of otherwise-normal log lines, timestamps spaced at meaningful ' +
+        'intervals, or the low-order bits of pixel color values in an image (the image-based ' +
+        'version of this is usually called steganography specifically).\n\n' +
+        'What makes these hard to spot isn\'t cryptographic strength — there\'s often no key at ' +
+        'all — it\'s that the carrier data looks completely mundane. A list of file sizes doesn\'t ' +
+        'invite scrutiny the way a block of base64 does. The skill is knowing which mundane-' +
+        'looking properties are *capable* of carrying a signal, and checking them when something ' +
+        'about a data set feels a little too uniform or a little too random.\n\n' +
+        'The fix, if you\'re defending against this rather than attacking it: don\'t assume ' +
+        'metadata-adjacent properties (sizes, timing, padding) are safe to leave uninspected in a ' +
+        'security review just because they\'re not the "real" data.',
+      challengeSlugs: ['parity-watermark'],
+    },
+    {
+      slug: 'broken-access-control',
+      title: 'Broken Access Control: IDOR, Mass Assignment & Open Redirects',
+      categoryId: web.id,
+      summary: 'Three different bugs, one root cause: trusting input the server should verify.',
+      content:
+        'Broken Access Control is OWASP\'s umbrella term for anything that lets a user do or see ' +
+        'something they shouldn\'t be authorized for — and it shows up in more shapes than just ' +
+        'IDOR (covered elsewhere in this track):\n\n' +
+        '- **Mass assignment**: an endpoint blindly writes an entire request body into a database ' +
+        'update (`User.update(req.user.id, { ...req.body })`), trusting that the client will only ' +
+        'ever send the fields the *form* exposes. Nothing stops a raw API request from also ' +
+        'including fields the form never showed — like `role` or `isPremium` — and having the ' +
+        'server write those too. The fix is an explicit allowlist of writable fields, never a ' +
+        'blind spread.\n' +
+        '- **Open redirect**: an endpoint redirects to wherever a `?next=` (or similar) parameter ' +
+        'says, with no check that the destination is actually part of the same site. Attackers ' +
+        'weaponize this by sending links to a *trusted* domain that silently bounce the victim ' +
+        'onward to an attacker-controlled page — dangerous specifically because the visible link ' +
+        'really does point at a site the victim trusts. The fix is validating the redirect target ' +
+        'against an allowlist of known-safe paths/domains before ever calling `redirect()`.\n\n' +
+        'The pattern across all of this: authorization isn\'t just "is this user logged in?" — ' +
+        'it\'s "is this exact user allowed to do this exact thing, with these exact inputs?", ' +
+        'checked explicitly, every time.',
+      challengeSlugs: ['mass-assignment', 'open-redirect'],
+    },
+    {
+      slug: 'well-known-ports-lesson',
+      title: 'Well-Known Ports',
+      categoryId: misc.id,
+      summary: 'A handful of port numbers you\'ll recognize on sight in any recon.',
+      content:
+        'Port numbers below 1024 are "well-known" ports, reserved by convention for specific ' +
+        'services — recognizing them on sight is a basic but genuinely useful recon skill, since ' +
+        'an open-port scan is often the very first thing done against a target:\n\n' +
+        '- **22 — SSH**: encrypted remote shell access, the modern replacement for plaintext ' +
+        'Telnet (port 23).\n' +
+        '- **25 — SMTP**: outbound mail delivery between mail servers.\n' +
+        '- **53 — DNS**: domain name resolution.\n' +
+        '- **80 / 443 — HTTP / HTTPS**: the web, unencrypted and TLS-encrypted respectively.\n' +
+        '- **3306 / 5432 — MySQL / PostgreSQL**: database servers, which should almost never be ' +
+        'reachable directly from the public internet.\n\n' +
+        'Seeing an unexpected port open — a database port facing the internet, an SSH port on a ' +
+        'host that shouldn\'t need shell access at all — is often the very first sign something\'s ' +
+        'misconfigured, before you\'ve even looked at what\'s running behind it.',
+      challengeSlugs: ['well-known-port'],
+    },
+    {
+      slug: 'threat-modeling-basics',
+      title: 'Threat Modeling Basics',
+      categoryId: foundations.id,
+      summary: 'A lightweight way to ask "what could go wrong here?" before something does.',
+      content:
+        'Threat modeling is the practice of systematically asking, for a given system: who might ' +
+        'attack it, what would they want, and how might they get it — done *before* something ' +
+        'goes wrong, not during incident response. It doesn\'t require special tools; a whiteboard ' +
+        'and a consistent set of questions gets most of the value.\n\n' +
+        'A simple, widely-used framework is **STRIDE**, one letter per threat category:\n\n' +
+        '- **S**poofing — pretending to be someone/something you\'re not.\n' +
+        '- **T**ampering — modifying data or code without authorization.\n' +
+        '- **R**epudiation — being able to deny having done something, due to missing logs/audit ' +
+        'trails.\n' +
+        '- **I**nformation disclosure — exposing data to someone who shouldn\'t see it.\n' +
+        '- **D**enial of service — degrading or blocking legitimate use.\n' +
+        '- **E**levation of privilege — gaining access beyond what was granted.\n\n' +
+        'Walking through a new feature or endpoint and asking "does STRIDE apply here, and how?" ' +
+        'catches a surprising number of the same bug classes taught elsewhere in this Academy — ' +
+        'IDOR is an Elevation of Privilege issue, a missing audit log is Repudiation, an unrate-' +
+        'limited login form is a Denial of Service risk. The value of threat modeling isn\'t the ' +
+        'framework itself, it\'s making "what could go wrong" a deliberate step instead of an ' +
+        'afterthought.',
+      challengeSlugs: [],
     },
   ];
 
