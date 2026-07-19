@@ -65,7 +65,11 @@ instancesRouter.delete(
   '/:id',
   requireAuth,
   asyncHandler(async (req, res) => {
-    const instance = await prisma.instance.findUnique({ where: { id: req.params.id } });
+    const instance = await prisma.instance.findUnique({
+  where: {
+    id: req.params.id as string,
+  },
+});
     if (!instance || instance.userId !== req.user!.sub) {
       throw new HttpError(404, 'Instance not found');
     }

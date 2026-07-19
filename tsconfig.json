@@ -1,0 +1,20 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./infra"
+    },
+    {
+      "path": "./packages/shared"
+    },
+    {
+      "path": "./apps/api"
+    },
+    {
+      "path": "./apps/orchestrator"
+    },
+    {
+      "path": "./apps/web"
+    }
+  ]
+}

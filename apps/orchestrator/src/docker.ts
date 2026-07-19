@@ -16,7 +16,7 @@ export async function pullImageIfMissing(image: string): Promise<void> {
   await new Promise<void>((resolve, reject) => {
     docker.pull(image, (err: Error | null, stream: NodeJS.ReadableStream) => {
       if (err) return reject(err);
-      docker.modem.followProgress(stream, (err2) => (err2 ? reject(err2) : resolve()));
+      docker.modem.followProgress(stream, (err2: Error | null) => (err2 ? reject(err2) : resolve()));
     });
   });
 }

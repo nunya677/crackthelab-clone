@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import { env } from './env.js';
 import { requireInternalToken } from './middleware/internalAuth.js';
