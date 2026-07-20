@@ -55,7 +55,7 @@ export function LessonDetailPage() {
             Try it yourself
           </h2>
           <div className="space-y-2">
-            {lesson.relatedChallenges.map((c) => (
+            {lesson.relatedChallenges.map((c: any) => (
               <Link
                 key={c.id}
                 to={`/challenges/${c.slug}`}
