@@ -38,6 +38,7 @@ export function LessonDetailPage() {
           </span>
           {lesson.title}
         </h1>
+
         <span
           className={`mt-3 inline-block rounded-full border border-zinc-700 bg-zinc-900 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide ${category.color}`}
         >
@@ -54,21 +55,26 @@ export function LessonDetailPage() {
           <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-cyan-400">
             Try it yourself
           </h2>
+
           <div className="space-y-2">
-            {lesson.relatedChallenges.map((c: any) => (
+            {lesson.relatedChallenges.map(c => (
               <Link
                 key={c.id}
                 to={`/challenges/${c.slug}`}
                 className="flex items-center justify-between rounded-lg border border-zinc-800 bg-black/40 px-4 py-3 transition-colors hover:border-zinc-600"
               >
                 <span className="font-medium">{c.title}</span>
+
                 <span className="flex items-center gap-2 text-xs">
                   <span
                     className={`rounded-full border px-2 py-0.5 font-semibold ${difficultyStyle[c.difficulty]}`}
                   >
                     {c.difficulty}
                   </span>
-                  <span className="font-bold text-cyan-400">{c.points} pts</span>
+
+                  <span className="font-bold text-cyan-400">
+                    {c.points} pts
+                  </span>
                 </span>
               </Link>
             ))}
